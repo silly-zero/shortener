@@ -65,7 +65,13 @@ func (l *ConvertLogic) Convert(req *types.ConvertRequest) (resp *types.ConvertRe
 		logx.Errorw("ShortUrlModel.FindOneBySurl failed", logx.LogField{Key: "err", Value: err.Error()})
 		return nil, err
 	}
-	//2.取号
+	//2.取号 基于mysql实现的发号器
+	//每来一个转链请求，我们就从mysql使用replace into的发号表中取一个号
+	seq, err := l.svcCtx.Sequence.Next()
+	if err != nil {
+		logx.Errorw("Sequence.Next failed", logx.LogField{Key: "err", Value: err.Error()})
+		return nil, err
+	}
 	//3.号码转为短链接
 	//4.存储长链接和短链接的映射关系
 	//5.返回短链接
