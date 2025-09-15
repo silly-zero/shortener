@@ -5,6 +5,8 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"shortener/model"
+	"shortener/pkg/base62"
 	"shortener/pkg/connect"
 	"shortener/pkg/md5"
 	urltool "shortener/pkg/url"
@@ -65,16 +67,40 @@ func (l *ConvertLogic) Convert(req *types.ConvertRequest) (resp *types.ConvertRe
 		logx.Errorw("ShortUrlModel.FindOneBySurl failed", logx.LogField{Key: "err", Value: err.Error()})
 		return nil, err
 	}
-	//2.取号 基于mysql实现的发号器
-	//每来一个转链请求，我们就从mysql使用replace into的发号表中取一个号
-	seq, err := l.svcCtx.Sequence.Next()
-	if err != nil {
-		logx.Errorw("Sequence.Next failed", logx.LogField{Key: "err", Value: err.Error()})
-		return nil, err
+	var short string
+	for {
+		//2.取号 基于mysql实现的发号器
+		//每来一个转链请求，我们就从mysql使用replace into的发号表中取一个号
+		seq, err := l.svcCtx.Sequence.Next()
+		if err != nil {
+			logx.Errorw("Sequence.Next failed", logx.LogField{Key: "err", Value: err.Error()})
+			return nil, err
+		}
+		fmt.Println(seq)
+		//3.号码转为短链接
+		//3.1 安全性
+		short = base62.IntToBase62(seq)
+		//3.2 短链接怎么避免敏感的字符
+		if _, ok := l.svcCtx.ShortUrlBlackList[short]; ok {
+			break // 避免敏感字符
+		}
 	}
-	//3.号码转为短链接
+	fmt.Printf("short: %s\n", short)
 	//4.存储长链接和短链接的映射关系
+	if _, err := l.svcCtx.ShortUrlModel.Insert(
+		l.ctx,
+		&model.ShortUrlMap{
+			Surl: sql.NullString{String: short, Valid: true},
+			Lurl: sql.NullString{String: req.LongUrl, Valid: true},
+			Md5:  sql.NullString{String: md5Value, Valid: true},
+		},
+	); err != nil {
+		logx.Errorw("ShortUrlModel.Insert failed", logx.LogField{Key: "err", Value: err.Error()})
+	}
 	//5.返回短链接
-
-	return
+	//5.1 返回的是短域名+短链接 baidu.com/123
+	shortUrl := l.svcCtx.Config.ShortDoamin + "/" + short
+	return &types.ConvertResponse{
+		ShortUrl: shortUrl,
+	}, nil
 }

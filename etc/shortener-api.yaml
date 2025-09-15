@@ -7,3 +7,9 @@ ShortUrlDB:
 
 Sequence:
   Dsn: root:1633747300@tcp(127.0.0.1:3306)/shortener?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+
+BaseString: 0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ
+
+ShortUrlBlackList: ["version","fuxk"]
+
+ShortDoamin: baidu.com

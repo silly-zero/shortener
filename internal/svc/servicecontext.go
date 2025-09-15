@@ -13,10 +13,18 @@ type ServiceContext struct {
 	ShortUrlModel model.ShortUrlMapModel
 
 	Sequence sequence.Sequence
+
+	ShortUrlBlackList map[string]struct{} // 短链接黑名单
+	
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
 	conn := sqlx.NewMysql(c.ShortUrlDB.DSN)
+	// 初始化短链接黑名单
+	m := make(map[string]struct{}, len(c.ShortUrlBlackList))
+	for _, v := range c.ShortUrlBlackList {
+		m[v] = struct{}{}
+	}
 	return &ServiceContext{
 		Config:        c,
 		ShortUrlModel: model.NewShortUrlMapModel(conn),
