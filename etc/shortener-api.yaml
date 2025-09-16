@@ -13,3 +13,6 @@ BaseString: 0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ
 ShortUrlBlackList: ["version","fuxk"]
 
 ShortDoamin: baidu.com
+
+CatheRedis:
+  -Host: 127.0.0.1:6379
