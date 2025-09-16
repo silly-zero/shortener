@@ -15,7 +15,7 @@ type ServiceContext struct {
 	Sequence sequence.Sequence
 
 	ShortUrlBlackList map[string]struct{} // 短链接黑名单
-	
+
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -27,7 +27,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	}
 	return &ServiceContext{
 		Config:        c,
-		ShortUrlModel: model.NewShortUrlMapModel(conn),
+		ShortUrlModel: model.NewShortUrlMapModel(conn, c.CatheRedis),
 		Sequence:      sequence.NewMySQL(c.Sequence.DSN),
 		//Sequence:       sequence.NewRedis(redisAddr),
 	}
