@@ -28,7 +28,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	return &ServiceContext{
 		Config:        c,
 		ShortUrlModel: model.NewShortUrlMapModel(conn, c.CatheRedis),
-		Sequence:      sequence.NewMySQL(c.Sequence.DSN),
-		//Sequence:       sequence.NewRedis(redisAddr),
+		//Sequence:      sequence.NewMySQL(c.Sequence.DSN),
+		Sequence: sequence.NewRedis(c.CatheRedis[0].Host),
 	}
 }
