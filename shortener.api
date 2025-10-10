@@ -16,32 +16,32 @@ type ShowResponse {
 
 // 定义获取短链接统计数据的请求类型
 type ShortUrlStatsRequest {
-    // 短链接标识，从URL路径中获取，且为必填项
-    ShortUrl string `path:"shortUrl" validate:"required"`
-    // 统计开始日期，可选参数，从查询参数中获取
-    StartDate string `form:"startDate"`
-    // 统计结束日期，可选参数，从查询参数中获取
-    EndDate string `form:"endDate"`
+	// 短链接标识，从URL路径中获取，且为必填项
+	ShortUrl string `path:"shortUrl" validate:"required"`
+	// 统计开始日期，可选参数，从查询参数中获取
+	StartDate string `form:"startDate"`
+	// 统计结束日期，可选参数，从查询参数中获取
+	EndDate string `form:"endDate"`
 }
 
 // 定义每日统计数据的结构
 type DailyStats {
-    // 日期，以JSON格式返回时的字段名为"date"
-    Date string `json:"date"`
-    // 当日点击量，以JSON格式返回时的字段名为"clicks"
-    Clicks int64 `json:"clicks"`
-    // 当日唯一访问者数量，以JSON格式返回时的字段名为"uniqueVisitors"
-    UniqueVisitors int64 `json:"uniqueVisitors"`
+	// 日期，以JSON格式返回时的字段名为"date"
+	Date string `json:"date"`
+	// 当日点击量，以JSON格式返回时的字段名为"clicks"
+	Clicks int64 `json:"clicks"`
+	// 当日唯一访问者数量，以JSON格式返回时的字段名为"uniqueVisitors"
+	UniqueVisitors int64 `json:"uniqueVisitors"`
 }
 
 // 定义短链接统计数据的响应类型
 type ShortUrlStatsResponse {
-    // 总点击量，以JSON格式返回时的字段名为"totalClicks"
-    TotalClicks int64 `json:"totalClicks"`
-    // 总唯一访问者数量，以JSON格式返回时的字段名为"totalUniqueVisitors"
-    TotalUniqueVisitors int64 `json:"totalUniqueVisitors"`
-    // 每日统计数据列表，以JSON格式返回时的字段名为"dailyStats"
-    DailyStats []DailyStats `json:"dailyStats"`
+	// 总点击量，以JSON格式返回时的字段名为"totalClicks"
+	TotalClicks int64 `json:"totalClicks"`
+	// 总唯一访问者数量，以JSON格式返回时的字段名为"totalUniqueVisitors"
+	TotalUniqueVisitors int64 `json:"totalUniqueVisitors"`
+	// 每日统计数据列表，以JSON格式返回时的字段名为"dailyStats"
+	DailyStats []DailyStats `json:"dailyStats"`
 }
 
 service shortener-api {
@@ -51,8 +51,7 @@ service shortener-api {
 	@handler ShowHandler
 	get /:shortUrl (ShowRequest) returns (ShowResponse)
 
-    @handler ShortUrlStatsHandler
-        get /stats/:shortUrl (ShortUrlStatsRequest) returns (ShortUrlStatsResponse)
-
+	@handler ShortUrlStatsHandler
+	get /stats/:shortUrl (ShortUrlStatsRequest) returns (ShortUrlStatsResponse)
 }
 

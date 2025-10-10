@@ -24,6 +24,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Path:    "/convert",
 				Handler: ConvertHandler(serverCtx),
 			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/stats/:shortUrl",
+				Handler: ShortUrlStatsHandler(serverCtx),
+			},
 		},
 	)
 }

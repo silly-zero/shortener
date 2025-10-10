@@ -11,6 +11,24 @@ type ConvertResponse struct {
 	ShortUrl string `json:"shortUrl"`
 }
 
+type DailyStats struct {
+	Date           string `json:"date"`
+	Clicks         int64  `json:"clicks"`
+	UniqueVisitors int64  `json:"uniqueVisitors"`
+}
+
+type ShortUrlStatsRequest struct {
+	ShortUrl  string `path:"shortUrl" validate:"required"`
+	StartDate string `form:"startDate"`
+	EndDate   string `form:"endDate"`
+}
+
+type ShortUrlStatsResponse struct {
+	TotalClicks         int64        `json:"totalClicks"`
+	TotalUniqueVisitors int64        `json:"totalUniqueVisitors"`
+	DailyStats          []DailyStats `json:"dailyStats"`
+}
+
 type ShowRequest struct {
 	ShortUrl string `path:"shortUrl" validate:"required"`
 }
