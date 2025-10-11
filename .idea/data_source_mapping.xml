@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourcePerFileMappings">
+    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/212e5b22-7241-4701-bcfe-a5739a15cae2/console_1.sql" value="212e5b22-7241-4701-bcfe-a5739a15cae2" />
+    <file url="file://$PROJECT_DIR$/model/clickstatisticsmodel.go" value="212e5b22-7241-4701-bcfe-a5739a15cae2" />
+  </component>
+</project>

@@ -9,8 +9,9 @@ import (
 )
 
 type ServiceContext struct {
-	Config        config.Config
-	ShortUrlModel model.ShortUrlMapModel
+	Config               config.Config
+	ShortUrlModel        model.ShortUrlMapModel
+	ClickStatisticsModel model.ClickStatisticsModel
 
 	Sequence sequence.Sequence
 
@@ -26,9 +27,10 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		m[v] = struct{}{}
 	}
 	return &ServiceContext{
-		Config:        c,
-		ShortUrlModel: model.NewShortUrlMapModel(conn, c.CatheRedis),
-		//Sequence:      sequence.NewMySQL(c.Sequence.DSN),
-		Sequence: sequence.NewRedis(c.CatheRedis[0].Host),
+		Config:               c,
+		ShortUrlModel:        model.NewShortUrlMapModel(conn, c.CatheRedis),
+		ClickStatisticsModel: model.NewClickStatisticsModel(conn, c.CatheRedis),
+		Sequence:             sequence.NewMySQL(c.Sequence.DSN),
+		//Sequence: sequence.NewRedis(c.CatheRedis[0].Host),
 	}
 }
