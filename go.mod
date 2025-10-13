@@ -5,6 +5,7 @@ go 1.25
 require (
 	github.com/go-playground/validator/v10 v10.27.0
 	github.com/zeromicro/go-zero v1.9.0
+	golang.org/x/time v0.10.0
 )
 
 require (

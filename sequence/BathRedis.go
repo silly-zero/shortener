@@ -11,7 +11,7 @@ import (
 type BatchRedis struct {
 	client     *redis.Redis
 	key        string
-	bathchSize int64
+	batchSize int64
 	currentMax int64
 	currentVal int64
 	lock       sync.Mutex
@@ -25,7 +25,7 @@ func NewBatchRedis(redisAddr string, batchSize int64) *BatchRedis {
 	return &BatchRedis{
 		client:     r,
 		key:        "shortener:sequence",
-		bathchSize: batchSize,
+		batchSize: batchSize,
 	}
 }
 
@@ -36,7 +36,7 @@ func (r *BatchRedis) Next() (seq uint64, err error) {
 	// 如果当前批次号用完了，从Redis批量获取新的号段
 	if r.currentVal >= r.currentMax {
 		// 使用Redis的INCRBY命令原子性地获取一个批次的序列号
-		newMax, err := r.client.Incrby(r.key, r.bathchSize)
+		newMax, err := r.client.Incrby(r.key, r.batchSize)
 		if err != nil {
 			logx.Errorw("client.IncrBy failed", logx.Field("err", err.Error()))
 			return 0, err
@@ -44,7 +44,7 @@ func (r *BatchRedis) Next() (seq uint64, err error) {
 
 		// 更新批次范围
 		r.currentMax = newMax
-		r.currentVal = newMax - r.bathchSize + 1
+		r.currentVal = newMax - r.batchSize + 1
 	}
 
 	// 返回当前序列号并递增
