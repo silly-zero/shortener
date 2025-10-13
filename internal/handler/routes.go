@@ -7,27 +7,35 @@ import (
 	"net/http"
 
 	"shortener/internal/svc"
+	"shortener/pkg/middleware"
 
 	"github.com/zeromicro/go-zero/rest"
 )
 
 func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
+	// 创建中间件链
+	commonMiddleware := middleware.Chain(
+		middleware.WithRequestContext(),
+		middleware.WithAccessLog(),
+		middleware.WithRateLimiter(1000), // 每秒限制1000个请求
+	)
+
 	server.AddRoutes(
 		[]rest.Route{
 			{
 				Method:  http.MethodGet,
 				Path:    "/:shortUrl",
-				Handler: ShowHandler(serverCtx),
+				Handler: commonMiddleware(ShowHandler(serverCtx)),
 			},
 			{
 				Method:  http.MethodPost,
 				Path:    "/convert",
-				Handler: ConvertHandler(serverCtx),
+				Handler: commonMiddleware(ConvertHandler(serverCtx)),
 			},
 			{
 				Method:  http.MethodGet,
 				Path:    "/stats/:shortUrl",
-				Handler: ShortUrlStatsHandler(serverCtx),
+				Handler: commonMiddleware(ShortUrlStatsHandler(serverCtx)),
 			},
 		},
 	)
