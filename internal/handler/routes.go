@@ -25,17 +25,17 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			{
 				Method:  http.MethodGet,
 				Path:    "/:shortUrl",
-				Handler: commonMiddleware(ShowHandler(serverCtx)),
+				Handler: commonMiddleware(ShowHandler(serverCtx)).ServeHTTP,
 			},
 			{
 				Method:  http.MethodPost,
 				Path:    "/convert",
-				Handler: commonMiddleware(ConvertHandler(serverCtx)),
+				Handler: commonMiddleware(ConvertHandler(serverCtx)).ServeHTTP,
 			},
 			{
 				Method:  http.MethodGet,
 				Path:    "/stats/:shortUrl",
-				Handler: commonMiddleware(ShortUrlStatsHandler(serverCtx)),
+				Handler: commonMiddleware(ShortUrlStatsHandler(serverCtx)).ServeHTTP,
 			},
 		},
 	)
