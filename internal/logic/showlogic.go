@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
-	"sync"
 	"time"
 
 	"shortener/internal/svc"
@@ -80,11 +79,11 @@ func (l *ShowLogic) recordAccessWithRedisQueue(shortUrl string) {
 
 	// 构建访问记录
 	accessRecord := map[string]interface{}{
-		"surl":      shortUrl,
+		"surl":       shortUrl,
 		"click_time": time.Now().Unix(),
-		"ip":        ip,
+		"ip":         ip,
 		"user_agent": userAgent,
-		"referer":   referer,
+		"referer":    referer,
 	}
 
 	// 序列化为JSON并推入Redis队列
@@ -95,7 +94,7 @@ func (l *ShowLogic) recordAccessWithRedisQueue(shortUrl string) {
 		Host: l.svcCtx.Config.CatheRedis[0].Host,
 	})
 
-	err := redisClient.Lpush("shortener:access_queue", string(data))
+	_, err := redisClient.Lpush("shortener:access_queue", string(data))
 	if err != nil {
 		logx.Errorw("推入访问记录队列失败", logx.LogField{Key: "err", Value: err.Error()})
 		// 如果队列失败，降级到直接写库
