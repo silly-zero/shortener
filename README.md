@@ -11,3 +11,5 @@
    goctl model mysql datasource -url="root:root@tcp(127.0.0.1:3306)/shortener" -table="short_url_map" -dir="./model" -c
    goctl model mysql datasource -url="root:root@tcp(127.0.0.1:3306)/shortener" -table="sequence" -dir="./model" -c
 ```
+
+
