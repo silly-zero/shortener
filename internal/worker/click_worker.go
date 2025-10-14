@@ -8,9 +8,10 @@ import (
 
 	"shortener/model"
 
+	"sync"
+
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/stores/redis"
-	"github.com/zeromicro/go-zero/core/syncx"
 )
 
 // ClickWorker 点击统计异步处理worker
@@ -20,7 +21,7 @@ type ClickWorker struct {
 	queueName   string
 	batchSize   int
 	quit        chan struct{}
-	wg          syncx.WaitGroupWrapper
+	wg          sync.WaitGroup
 }
 
 // NewClickWorker 创建点击统计worker
@@ -40,9 +41,11 @@ func NewClickWorker(redisClient *redis.Redis, model model.ClickStatisticsModel) 
 func (w *ClickWorker) Start() {
 	// 启动多个工作协程
 	for i := 0; i < 4; i++ {
-		w.wg.Add(func() {
+		w.wg.Add(1)
+		go func() {
+			defer w.wg.Done()
 			w.processQueue()
-		})
+		}()
 	}
 
 	logx.Info("点击统计worker已启动")
@@ -73,9 +76,9 @@ func (w *ClickWorker) processQueue() {
 // batchProcess 批量处理点击记录
 func (w *ClickWorker) batchProcess() {
 	// 从队列中批量获取数据
-	records, err := w.redisClient.Lrange(w.queueName, 0, int64(w.batchSize-1))
+	records, err := w.redisClient.Lrange(w.queueName, 0, int(w.batchSize-1))
 	if err != nil {
-		logx.Errorw("从队列获取数据失败", logx.Field{Key: "err", Value: err.Error()})
+		logx.Errorw("从队列获取数据失败", logx.Field("err", err.Error()))
 		return
 	}
 
@@ -87,7 +90,7 @@ func (w *ClickWorker) batchProcess() {
 	for _, recordStr := range records {
 		var record map[string]interface{}
 		if err := json.Unmarshal([]byte(recordStr), &record); err != nil {
-			logx.Errorw("解析记录失败", logx.Field{Key: "err", Value: err.Error()})
+			logx.Errorw("解析记录失败", logx.Field("err", err.Error()))
 			continue
 		}
 
@@ -122,6 +125,6 @@ func (w *ClickWorker) saveToDatabase(record map[string]interface{}) {
 	})
 
 	if err != nil {
-		logx.Errorw("保存点击记录失败", logx.Field{Key: "err", Value: err.Error()})
+		logx.Errorw("保存点击记录失败", logx.Field("err", err.Error()))
 	}
 }
