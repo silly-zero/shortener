@@ -8,8 +8,10 @@ import (
 	"shortener/internal/config"
 	"shortener/internal/handler"
 	"shortener/internal/svc"
+	"shortener/internal/worker"
 
 	"github.com/zeromicro/go-zero/core/conf"
+	"github.com/zeromicro/go-zero/core/stores/redis"
 	"github.com/zeromicro/go-zero/rest"
 )
 
@@ -29,6 +31,14 @@ func main() {
 
 	ctx := svc.NewServiceContext(c)
 	handler.RegisterHandlers(server, ctx)
+
+	// 初始化并启动点击统计worker
+	redisClient := redis.MustNewRedis(redis.RedisConf{
+		Host: c.CatheRedis[0].Host,
+	})
+	clickWorker := worker.NewClickWorker(redisClient, ctx.ClickStatisticsModel)
+	clickWorker.Start()
+	defer clickWorker.Stop()
 
 	fmt.Printf("Starting server at %s:%d...\n", c.Host, c.Port)
 	server.Start()
