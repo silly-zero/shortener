@@ -39,6 +39,8 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		ShortUrlModel:        model.NewShortUrlMapModel(conn, c.CatheRedis),
 		ClickStatisticsModel: model.NewClickStatisticsModel(conn, c.CatheRedis),
 		// 使用批量Redis序列生成器，批大小设为1000
+		//Sequence:             sequence.NewMySQL(c.Sequence.DSN),
+		//Sequence: sequence.NewRedis(c.CatheRedis[0].Host),
 		Sequence:             sequence.NewBatchRedis(c.CatheRedis[0].Host, 1000),
 		ShortUrlBlackList:    m,
 		LocalCache:           localCache,

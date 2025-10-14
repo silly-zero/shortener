@@ -5,10 +5,7 @@ import (
 	"net/http"
 	"strings"
 	"time"
-
-	"github.com/zeromicro/go-zero/core/chain"
 	"github.com/zeromicro/go-zero/core/logx"
-
 	"github.com/zeromicro/go-zero/core/limit"
 )
 
@@ -80,5 +77,12 @@ func WithAccessLog() func(http.Handler) http.Handler {
 
 // Chain 创建中间件链
 func Chain(handlers ...func(http.Handler) http.Handler) func(http.Handler) http.Handler {
-	return chain.New(handlers...)
+	  // 返回一个中间件，该中间件会按顺序执行所有传入的 handlers
+    return func(next http.Handler) http.Handler {
+        // 从后往前嵌套中间件：最后一个中间件先包裹业务逻辑，再被前一个包裹
+        for i := len(handlers) - 1; i >= 0; i-- {
+            next = handlers[i](next)
+        }
+        return next
+    }
 }

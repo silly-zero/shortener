@@ -64,17 +64,14 @@ func (c *LocalCache) cleanupLoop() {
 	ticker := time.NewTicker(c.ttl / 2)
 	defer ticker.Stop()
 
-	for {
-		select {
-		case <-ticker.C:
-			c.lock.Lock()
-			now := time.Now()
-			for k, v := range c.cache {
-				if now.After(v.expireTime) {
-					delete(c.cache, k)
-				}
+	for range ticker.C {
+		c.lock.Lock()
+		now := time.Now()
+		for k, v := range c.cache {
+			if now.After(v.expireTime) {
+				delete(c.cache, k)
 			}
-			c.lock.Unlock()
 		}
+		c.lock.Unlock()
 	}
 }
